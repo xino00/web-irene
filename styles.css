@@ -463,30 +463,213 @@ code {
 .lookbook__titulo { font-family: var(--serif); font-size: 1.3rem; margin: 0 0 .4rem; color: var(--crema); }
 .lookbook p:last-child { margin: 0; }
 
-/* ---------------- El Libro Rojo (fotos) ---------------- */
-.galeria { display: grid; gap: .9rem; margin-top: 1.6rem; grid-template-columns: 1fr; }
-.foto { margin: 0; }
-.foto img,
-.foto .placeholder {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: var(--radio);
-  border: 1px solid rgba(232,196,124,.35);
-  box-shadow: var(--sombra);
-  display: block;
+/* ---------------- Mapa de Misiones ---------------- */
+.capitulo__in--misiones { max-width: 880px; }
+.misiones {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.4rem;
+  text-align: left;
 }
-.foto .placeholder {
+.misiones__mapa {
+  position: relative;
+  overflow: hidden;
+  padding: .9rem;
+  border: 1px solid rgba(232,196,124,.3);
+  border-radius: var(--radio);
+  background:
+    linear-gradient(145deg, rgba(74,63,107,.28), rgba(18,18,31,.76)),
+    repeating-linear-gradient(135deg, rgba(232,196,124,.06) 0 1px, transparent 1px 18px);
+  box-shadow: var(--sombra);
+}
+.misiones__mapa::before {
+  content: "";
+  position: absolute;
+  inset: 1rem;
+  border: 1px dashed rgba(232,196,124,.22);
+  border-radius: 14px;
+  pointer-events: none;
+}
+.mision-hitos {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+.mision-hito {
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "marca dia"
+    "marca nombre"
+    "marca estado";
+  align-content: center;
+  gap: .1rem .65rem;
+  width: 100%;
+  padding: .8rem;
+  border: 1px solid rgba(165,138,90,.42);
+  border-radius: 14px;
+  background: rgba(18,18,31,.72);
+  color: var(--crema);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--sans);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.mision-hito:hover {
+  transform: translateY(-2px);
+  border-color: rgba(232,196,124,.72);
+  box-shadow: 0 10px 22px rgba(0,0,0,.32), 0 0 14px rgba(232,196,124,.14);
+}
+.mision-hito__marca {
+  grid-area: marca;
   display: grid;
   place-items: center;
-  gap: .4rem;
-  background: linear-gradient(150deg, rgba(74,63,107,.4), rgba(18,18,31,.7));
-  color: var(--crema-tenue);
-  font-size: .9rem;
-  text-align: center;
-  padding: 1rem;
+  width: 38px;
+  height: 38px;
+  align-self: center;
+  border: 1px solid rgba(232,196,124,.48);
+  border-radius: 50%;
+  color: var(--dorado);
+  font-family: var(--regia);
+  font-size: .76rem;
+  background: rgba(232,196,124,.08);
 }
-.foto .placeholder .ph-star { font-size: 1.6rem; color: var(--dorado); }
+.mision-hito__dia {
+  grid-area: dia;
+  color: var(--dorado);
+  font-family: var(--regia);
+  font-size: .62rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+.mision-hito__nombre {
+  grid-area: nombre;
+  min-width: 0;
+  color: var(--crema);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+.mision-hito__estado {
+  grid-area: estado;
+  color: var(--crema-tenue);
+  font-size: .74rem;
+  line-height: 1.25;
+}
+.mision-hito.desbloqueado {
+  border-color: rgba(232,196,124,.68);
+  background: rgba(74,63,107,.42);
+}
+.mision-hito.completado {
+  border-color: rgba(159,212,230,.72);
+  box-shadow: 0 0 18px rgba(159,212,230,.12);
+}
+.mision-hito.completado .mision-hito__marca {
+  color: #14212a;
+  background: var(--ithildin);
+  border-color: var(--ithildin);
+}
+.misiones__paneles {
+  display: grid;
+  gap: .85rem;
+}
+.mision-panel[hidden] { display: none; }
+.mision-panel {
+  padding: 1rem;
+  border: 1px solid rgba(232,196,124,.34);
+  border-radius: var(--radio);
+  background: linear-gradient(155deg, rgba(26,26,46,.92), rgba(36,31,61,.8));
+  box-shadow: var(--sombra);
+}
+.mision-panel.revelado { animation: aparecer .35s ease both; }
+.mision-panel.completado { border-color: rgba(159,212,230,.6); }
+.mision-panel__cabecera {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .1rem .75rem;
+  align-items: center;
+  margin-bottom: .45rem;
+}
+.mision-panel__dia {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--dorado);
+  font-family: var(--regia);
+  font-size: .64rem;
+  letter-spacing: 1.7px;
+  text-transform: uppercase;
+}
+.mision-panel h3 {
+  margin: 0;
+  color: var(--crema);
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  line-height: 1.12;
+}
+.mision-panel__progreso {
+  min-width: 3.2rem;
+  padding: .22rem .48rem;
+  border: 1px solid rgba(159,212,230,.42);
+  border-radius: 999px;
+  color: var(--ithildin);
+  font-size: .78rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.mision-panel__resumen {
+  margin: 0 0 .85rem;
+  color: var(--crema-tenue);
+  font-size: .96rem;
+  line-height: 1.55;
+}
+.mision-objetivos {
+  display: grid;
+  gap: .5rem;
+  margin: .8rem 0 1rem;
+}
+.mision-check {
+  display: grid;
+  grid-template-columns: 1.15rem minmax(0, 1fr);
+  gap: .55rem;
+  align-items: start;
+  padding: .62rem .7rem;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  color: var(--crema);
+  font-size: .94rem;
+  line-height: 1.35;
+}
+.mision-check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: .12rem 0 0;
+  accent-color: var(--dorado);
+}
+.mision-panel__extras {
+  display: grid;
+  gap: .45rem;
+  margin-bottom: 1rem;
+}
+.mision-panel__extras p {
+  margin: 0;
+  color: var(--crema-tenue);
+  font-size: .94rem;
+  line-height: 1.45;
+}
+.mision-panel__extras strong { color: var(--rosa); }
+.btn--misiones {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 42px;
+  padding: .72em 1.35em;
+  font-size: .82rem;
+}
 
 /* ---------------- La carta: sobre con sello de cera ---------------- */
 .sobre { position: relative; }
@@ -621,10 +804,31 @@ code {
 
 /* ---------------- Escritorio ---------------- */
 @media (min-width: 720px) {
-  .galeria { grid-template-columns: repeat(3, 1fr); }
   .etapas { grid-template-columns: repeat(4, 1fr); }
+  .misiones {
+    grid-template-columns: minmax(260px, .85fr) minmax(360px, 1.15fr);
+    align-items: start;
+  }
+  .mision-hitos { grid-template-columns: 1fr; }
   .capitulo__in { max-width: 700px; }
+  .capitulo__in--misiones { max-width: 880px; }
   .capitulo__in--estrecho { max-width: 580px; }
+}
+
+@media (max-width: 360px) {
+  .mision-hitos { grid-template-columns: 1fr; }
+  .mision-hito { min-height: 88px; }
+  .mision-panel__cabecera { grid-template-columns: 1fr; }
+  .mision-panel__progreso { justify-self: start; }
+  .btn--misiones { width: 100%; }
+}
+
+@media (max-width: 620px) {
+  .mision-panel {
+    max-height: 34dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
 }
 
 /* ---------------- Accesibilidad: menos movimiento ---------------- */

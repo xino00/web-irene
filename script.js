@@ -336,6 +336,104 @@ document.addEventListener("DOMContentLoaded", () => {
       if (destino >= 0) irA(destino);
     }));
 
+  /* ============================================================
+     Mapa de Misiones: revelar hitos y guardar objetivos marcados
+     ============================================================ */
+  const MISIONES_STORAGE = "web-irene-misiones-v1";
+  const misiones = document.querySelector(".misiones");
+  if (misiones) {
+    const hitos = Array.from(misiones.querySelectorAll(".mision-hito"));
+    const paneles = Array.from(misiones.querySelectorAll(".mision-panel"));
+    const hitoPorMision = new Map(hitos.map((hito) => [hito.dataset.mision, hito]));
+    const panelPorMision = new Map(paneles.map((panel) => [panel.dataset.mision, panel]));
+    const checks = Array.from(misiones.querySelectorAll("[data-mision-check]"));
+
+    function leerEstadoMisiones() {
+      try {
+        const guardado = JSON.parse(localStorage.getItem(MISIONES_STORAGE) || "{}");
+        return {
+          abiertas: guardado.abiertas && typeof guardado.abiertas === "object" ? guardado.abiertas : {},
+          checks: guardado.checks && typeof guardado.checks === "object" ? guardado.checks : {},
+        };
+      } catch (e) {
+        return { abiertas: {}, checks: {} };
+      }
+    }
+
+    const estadoMisiones = leerEstadoMisiones();
+
+    function guardarEstadoMisiones() {
+      try {
+        localStorage.setItem(MISIONES_STORAGE, JSON.stringify(estadoMisiones));
+      } catch (e) { /* si el navegador no guarda estado, la página sigue funcionando */ }
+    }
+
+    function checksDeMision(clave) {
+      const panel = panelPorMision.get(clave);
+      return panel ? Array.from(panel.querySelectorAll("[data-mision-check]")) : [];
+    }
+
+    function refrescarMision(clave) {
+      const hito = hitoPorMision.get(clave);
+      const panel = panelPorMision.get(clave);
+      if (!hito || !panel) return;
+
+      const abierta = Boolean(estadoMisiones.abiertas[clave]);
+      const checksMision = checksDeMision(clave);
+      const hechos = checksMision.filter((check) => check.checked).length;
+      const completada = checksMision.length > 0 && hechos === checksMision.length;
+
+      hito.setAttribute("aria-expanded", abierta ? "true" : "false");
+      hito.classList.toggle("desbloqueado", abierta);
+      hito.classList.toggle("completado", completada);
+      panel.hidden = !abierta;
+      panel.classList.toggle("revelado", abierta);
+      panel.classList.toggle("completado", completada);
+
+      const estado = hito.querySelector(".mision-hito__estado");
+      if (estado) estado.textContent = completada ? "Lista" : abierta ? "Revelada" : "Por revelar";
+
+      const progreso = panel.querySelector("[data-mision-progreso]");
+      if (progreso) progreso.textContent = hechos + "/" + checksMision.length;
+    }
+
+    function abrirMision(clave, origen) {
+      const primeraVez = !estadoMisiones.abiertas[clave];
+      estadoMisiones.abiertas[clave] = true;
+      guardarEstadoMisiones();
+      refrescarMision(clave);
+
+      if (primeraVez && origen) {
+        campanitas([523.25, 659.25]);
+        const r = origen.getBoundingClientRect();
+        fxChispas(r.left + r.width / 2, r.top + r.height / 2, 26, 3.2);
+      }
+    }
+
+    checks.forEach((check) => {
+      const id = check.dataset.misionCheck;
+      const panel = check.closest(".mision-panel");
+      const clave = panel ? panel.dataset.mision : "";
+      check.checked = Boolean(estadoMisiones.checks[id]);
+      if (check.checked && clave) estadoMisiones.abiertas[clave] = true;
+
+      check.addEventListener("change", () => {
+        if (check.checked) estadoMisiones.checks[id] = true;
+        else delete estadoMisiones.checks[id];
+        if (clave) estadoMisiones.abiertas[clave] = true;
+        guardarEstadoMisiones();
+        if (clave) refrescarMision(clave);
+      });
+    });
+
+    hitos.forEach((hito) => {
+      hito.addEventListener("click", () => abrirMision(hito.dataset.mision, hito));
+    });
+
+    hitos.forEach((hito) => refrescarMision(hito.dataset.mision));
+    guardarEstadoMisiones();
+  }
+
   /* teclado (cuando el libro ya está a la vista) */
   addEventListener("keydown", (e) => {
     if (libro.hidden || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -487,25 +585,6 @@ document.addEventListener("DOMContentLoaded", () => {
     guia.style.transform =
       "translate(" + (punto.x * escala - 13) + "px, " + (punto.y * escala - 13) + "px)";
   }
-
-  /* ============================================================
-     Placeholder bonito si una foto no existe
-     ============================================================ */
-  function mostrarPlaceholder(img) {
-    if (!img.parentNode) return;
-    const etiqueta = img.getAttribute("data-etiqueta") || "Foto";
-    const ph = document.createElement("div");
-    ph.className = "placeholder";
-    ph.innerHTML =
-      '<span class="ph-star">✦</span>' +
-      "<span>" + etiqueta + "</span>" +
-      '<span style="font-size:.78rem;opacity:.75">Aquí irá un recuerdo nuestro</span>';
-    img.replaceWith(ph);
-  }
-  document.querySelectorAll(".foto img").forEach((img) => {
-    img.addEventListener("error", () => mostrarPlaceholder(img));
-    if (img.complete && img.naturalWidth === 0) mostrarPlaceholder(img);
-  });
 
   /* ============================================================
      La carta: romper el sello de cera
