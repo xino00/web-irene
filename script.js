@@ -354,9 +354,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return {
           abiertas: guardado.abiertas && typeof guardado.abiertas === "object" ? guardado.abiertas : {},
           checks: guardado.checks && typeof guardado.checks === "object" ? guardado.checks : {},
+          activa: typeof guardado.activa === "string" ? guardado.activa : "",
         };
       } catch (e) {
-        return { abiertas: {}, checks: {} };
+        return { abiertas: {}, checks: {}, activa: "" };
       }
     }
 
@@ -379,15 +380,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!hito || !panel) return;
 
       const abierta = Boolean(estadoMisiones.abiertas[clave]);
+      const visible = abierta && estadoMisiones.activa === clave;
       const checksMision = checksDeMision(clave);
       const hechos = checksMision.filter((check) => check.checked).length;
       const completada = checksMision.length > 0 && hechos === checksMision.length;
 
-      hito.setAttribute("aria-expanded", abierta ? "true" : "false");
+      hito.setAttribute("aria-expanded", visible ? "true" : "false");
       hito.classList.toggle("desbloqueado", abierta);
       hito.classList.toggle("completado", completada);
-      panel.hidden = !abierta;
-      panel.classList.toggle("revelado", abierta);
+      panel.hidden = !visible;
+      panel.classList.toggle("revelado", visible);
       panel.classList.toggle("completado", completada);
 
       const estado = hito.querySelector(".mision-hito__estado");
@@ -400,8 +402,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function abrirMision(clave, origen) {
       const primeraVez = !estadoMisiones.abiertas[clave];
       estadoMisiones.abiertas[clave] = true;
+      estadoMisiones.activa = clave;
       guardarEstadoMisiones();
-      refrescarMision(clave);
+      hitos.forEach((hito) => refrescarMision(hito.dataset.mision));
 
       if (primeraVez && origen) {
         campanitas([523.25, 659.25]);
@@ -421,8 +424,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (check.checked) estadoMisiones.checks[id] = true;
         else delete estadoMisiones.checks[id];
         if (clave) estadoMisiones.abiertas[clave] = true;
+        if (clave && !estadoMisiones.activa) estadoMisiones.activa = clave;
         guardarEstadoMisiones();
-        if (clave) refrescarMision(clave);
+        hitos.forEach((hito) => refrescarMision(hito.dataset.mision));
       });
     });
 
@@ -430,6 +434,10 @@ document.addEventListener("DOMContentLoaded", () => {
       hito.addEventListener("click", () => abrirMision(hito.dataset.mision, hito));
     });
 
+    if (!estadoMisiones.activa) {
+      const primeraAbierta = hitos.find((hito) => estadoMisiones.abiertas[hito.dataset.mision]);
+      if (primeraAbierta) estadoMisiones.activa = primeraAbierta.dataset.mision;
+    }
     hitos.forEach((hito) => refrescarMision(hito.dataset.mision));
     guardarEstadoMisiones();
   }
