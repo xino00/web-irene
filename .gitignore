@@ -1,0 +1,69 @@
+# Local automation snapshots and reports
+.playwright-cli/
+.playwright-mcp/
+playwright-report/
+test-results/
+blob-report/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*
+*service-account*.json
+.mcp.json
+.mcp.*.json
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+
+# Editor and OS files
+.vscode
+.vscode/
+.idea
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Local shell/editor config accidentally placed in the repo
+.gitconfig
+.gitmodules
+.bashrc
+.bash_profile
+.zshrc
+.zprofile
+.profile
+.ripgreprc
+
+# Local agent/tool state
+.claude/
+.agents/
+.codex/
+
+# JavaScript/front-end tooling, if added later
+node_modules/
+dist/
+build/
+.cache/
+.vite/
+.parcel-cache/
+.turbo/
+coverage/
+.nyc_output/

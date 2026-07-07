@@ -1,0 +1,21 @@
+FOTOS DE ESTA CARPETA
+=====================
+
+Pon aquí hasta 3 fotos con estos nombres EXACTOS (en minúsculas):
+
+    foto-1.jpg
+    foto-2.jpg
+    foto-3.jpg
+
+Consejos:
+- Formato .jpg (si usas .png o .jpeg, renómbralas a .jpg o cambia el
+  nombre en index.html, sección "Nuestro rincón").
+- Se recortan a formato horizontal (4:3), así que elige fotos apaisadas
+  o donde lo importante esté centrado.
+- Peso recomendado: menos de ~500 KB cada una para que cargue rápido.
+
+Si NO pones una foto, no pasa nada: aparece un marco bonito con una
+estrella en su lugar (no se ve ninguna imagen rota).
+
+PRIVACIDAD: si subes la web a GitHub Pages, estas fotos serán accesibles
+por su URL para quien la conozca. Lee la nota de privacidad del README.md.
